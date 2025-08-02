@@ -684,3 +684,727 @@ function setupEventListeners() {
    const generateBtn = document.getElementById('generateExercise');
    const showAnswerBtn = document.getElementById('showAnswer');
    const nextBtn = document.getElementById('nextExercise');
+   // Continuación del código...
+
+// Función para configurar event listeners
+function setupEventListeners() {
+  const generateBtn = document.getElementById('generateExercise');
+  const showAnswerBtn = document.getElementById('showAnswer');
+  const nextBtn = document.getElementById('nextExercise');
+  const submitAnswerBtn = document.getElementById('submitAnswer');
+  
+  if (generateBtn) {
+      generateBtn.addEventListener('click', generateExercise);
+  }
+  
+  if (showAnswerBtn) {
+      showAnswerBtn.addEventListener('click', showAnswer);
+  }
+  
+  if (nextBtn) {
+      nextBtn.addEventListener('click', nextExercise);
+  }
+  
+  if (submitAnswerBtn) {
+      submitAnswerBtn.addEventListener('click', submitUserAnswer);
+  }
+}
+
+// Función para renderizar el selector de categorías
+function renderCategorySelector() {
+  const categorySelect = document.getElementById('categorySelector');
+  if (!categorySelect) return;
+  
+  categorySelect.innerHTML = '<option value="">Selecciona una categoría</option>';
+  
+  Object.keys(exerciseDatabase).forEach(category => {
+      const option = document.createElement('option');
+      option.value = category;
+      option.textContent = formatCategoryName(category);
+      categorySelect.appendChild(option);
+  });
+}
+
+// Función para formatear nombres de categorías
+function formatCategoryName(category) {
+  const categoryNames = {
+      'LIMITES': 'Límites',
+      'DERIVADAS': 'Derivadas',
+      'INTEGRALES': 'Integrales',
+      'RAZONES_CAMBIO': 'Razones de Cambio',
+      'ASINTOTAS': 'Asíntotas',
+      'GRAFICAS_FUNCIONES': 'Gráficas de Funciones',
+      'ECUACIONES_RECTA': 'Ecuaciones de la Recta'
+  };
+  return categoryNames[category] || category;
+}
+
+// Función para generar un ejercicio
+function generateExercise() {
+  const categorySelect = document.getElementById('categorySelector');
+  const selectedCategory = categorySelect.value;
+  
+  if (!selectedCategory) {
+      alert('Por favor selecciona una categoría');
+      return;
+  }
+  
+  const exercises = exerciseDatabase[selectedCategory];
+  if (!exercises || exercises.length === 0) {
+      alert('No hay ejercicios disponibles para esta categoría');
+      return;
+  }
+  
+  // Seleccionar un ejercicio aleatorio
+  const randomIndex = Math.floor(Math.random() * exercises.length);
+  currentExercise = exercises[randomIndex];
+  currentExercise.category = selectedCategory;
+  
+  // Marcar categoría como usada
+  categoriesUsed.add(selectedCategory);
+  
+  displayExercise();
+  updateUI();
+}
+
+// Función para mostrar el ejercicio
+function displayExercise() {
+  const exerciseContainer = document.getElementById('exerciseContainer');
+  const questionDiv = document.getElementById('currentQuestion');
+  const hintDiv = document.getElementById('exerciseHint');
+  const pointsDiv = document.getElementById('exercisePoints');
+  
+  if (!currentExercise) return;
+  
+  // Mostrar el ejercicio
+  exerciseContainer.style.display = 'block';
+  questionDiv.innerHTML = `<strong>Pregunta:</strong> ${currentExercise.question}`;
+  hintDiv.innerHTML = `<strong>Pista:</strong> ${currentExercise.hint}`;
+  pointsDiv.innerHTML = `<strong>Puntos:</strong> ${currentExercise.points}`;
+  
+  // Resetear botones y respuesta
+  document.getElementById('showAnswer').style.display = 'inline-block';
+  document.getElementById('nextExercise').style.display = 'none';
+  document.getElementById('answerContainer').style.display = 'none';
+  document.getElementById('userAnswerContainer').style.display = 'block';
+  document.getElementById('userAnswer').value = '';
+  
+  // Renderizar matemáticas con MathJax
+  if (window.MathJax) {
+      MathJax.typesetPromise([exerciseContainer]);
+  }
+}
+
+// Función para mostrar la respuesta
+function showAnswer() {
+  if (!currentExercise) return;
+  
+  const answerDiv = document.getElementById('currentAnswer');
+  answerDiv.innerHTML = `<strong>Respuesta:</strong><br>${currentExercise.answer.replace(/\n/g, '<br>')}`;
+  
+  document.getElementById('answerContainer').style.display = 'block';
+  document.getElementById('showAnswer').style.display = 'none';
+  document.getElementById('nextExercise').style.display = 'inline-block';
+  
+  // Renderizar matemáticas con MathJax
+  if (window.MathJax) {
+      MathJax.typesetPromise([answerDiv]);
+  }
+}
+
+// Función para enviar respuesta del usuario
+function submitUserAnswer() {
+  const userAnswer = document.getElementById('userAnswer').value.trim();
+  
+  if (!userAnswer) {
+      alert('Por favor ingresa tu respuesta');
+      return;
+  }
+  
+  if (!currentExercise) return;
+  
+  // Simular evaluación de respuesta (en una implementación real sería más sofisticada)
+  const isCorrect = evaluateAnswer(userAnswer, currentExercise.answer);
+  
+  // Actualizar estadísticas
+  userStats.totalExercises++;
+  if (isCorrect) {
+      userStats.correctAnswers++;
+      userScore += currentExercise.points;
+      currentStreak++;
+  } else {
+      currentStreak = 0;
+  }
+  
+  // Actualizar estadísticas por categoría
+  if (!userStats.categoryStats[currentExercise.category]) {
+      userStats.categoryStats[currentExercise.category] = { total: 0, correct: 0 };
+  }
+  userStats.categoryStats[currentExercise.category].total++;
+  if (isCorrect) {
+      userStats.categoryStats[currentExercise.category].correct++;
+  }
+  
+  // Agregar al historial
+  exerciseHistory.push({
+      question: currentExercise.question,
+      userAnswer: userAnswer,
+      correctAnswer: currentExercise.answer,
+      isCorrect: isCorrect,
+      points: isCorrect ? currentExercise.points : 0,
+      category: currentExercise.category,
+      timestamp: new Date()
+  });
+  
+  // Mostrar resultado
+  showAnswerResult(isCorrect);
+  
+  // Verificar logros
+  checkAchievements();
+  
+  // Actualizar UI
+  updateUI();
+}
+
+// Función para evaluar respuesta (simplificada)
+function evaluateAnswer(userAnswer, correctAnswer) {
+  // Esta es una evaluación muy básica
+  // En una implementación real se necesitaría un sistema más sofisticado
+  const cleanUser = userAnswer.toLowerCase().replace(/\s+/g, '');
+  const cleanCorrect = correctAnswer.toLowerCase().replace(/\s+/g, '');
+  
+  // Buscar palabras clave o patrones
+  if (cleanUser.includes('no existe') && cleanCorrect.includes('no existe')) return true;
+  if (cleanUser.includes('infinito') && cleanCorrect.includes('infinito')) return true;
+  if (cleanUser.includes('discontinua') && cleanCorrect.includes('discontinua')) return true;
+  
+  // Verificar números simples
+  const userNumbers = cleanUser.match(/\d+/g);
+  const correctNumbers = cleanCorrect.match(/\d+/g);
+  
+  if (userNumbers && correctNumbers) {
+      return userNumbers.some(num => correctNumbers.includes(num));
+  }
+  
+  return cleanUser === cleanCorrect;
+}
+
+// Función para mostrar resultado de la respuesta
+function showAnswerResult(isCorrect) {
+  const resultDiv = document.getElementById('answerResult');
+  
+  if (isCorrect) {
+      resultDiv.innerHTML = `
+          <div class="alert alert-success">
+              <strong>¡Correcto!</strong> Ganaste ${currentExercise.points} puntos.
+              <br>Racha actual: ${currentStreak} ejercicios.
+          </div>
+      `;
+  } else {
+      resultDiv.innerHTML = `
+          <div class="alert alert-danger">
+              <strong>Incorrecto.</strong> La respuesta correcta es:
+              <br><br>${currentExercise.answer.replace(/\n/g, '<br>')}
+          </div>
+      `;
+  }
+  
+  resultDiv.style.display = 'block';
+  document.getElementById('userAnswerContainer').style.display = 'none';
+  document.getElementById('nextExercise').style.display = 'inline-block';
+  
+  // Renderizar matemáticas con MathJax
+  if (window.MathJax) {
+      MathJax.typesetPromise([resultDiv]);
+  }
+}
+
+// Función para pasar al siguiente ejercicio
+function nextExercise() {
+  document.getElementById('exerciseContainer').style.display = 'none';
+  document.getElementById('answerResult').style.display = 'none';
+  currentExercise = null;
+  
+  // Resetear selector
+  document.getElementById('categorySelector').value = '';
+}
+
+// Función para verificar logros
+function checkAchievements() {
+  // Primer Paso
+  if (!achievements["Primer Paso"].unlocked && userStats.totalExercises >= 1) {
+      unlockAchievement("Primer Paso");
+  }
+  
+  // Matemático Novato
+  if (!achievements["Matemático Novato"].unlocked && userScore >= 100) {
+      unlockAchievement("Matemático Novato");
+  }
+  
+  // Maestro
+  if (!achievements["Maestro"].unlocked && userScore >= 500) {
+      unlockAchievement("Maestro");
+  }
+  
+  // Perfeccionista
+  if (!achievements["Perfeccionista"].unlocked && currentStreak >= 5) {
+      unlockAchievement("Perfeccionista");
+  }
+  
+  // Explorador
+  if (!achievements["Explorador"].unlocked && categoriesUsed.size >= Object.keys(exerciseDatabase).length) {
+      unlockAchievement("Explorador");
+  }
+  
+  // Especialista
+  Object.keys(userStats.categoryStats).forEach(category => {
+      if (!achievements["Especialista"].unlocked && 
+          userStats.categoryStats[category].total >= 10) {
+          unlockAchievement("Especialista");
+      }
+  });
+}
+
+// Función para desbloquear logro
+function unlockAchievement(achievementName) {
+  if (achievements[achievementName] && !achievements[achievementName].unlocked) {
+      achievements[achievementName].unlocked = true;
+      userScore += achievements[achievementName].points;
+      
+      // Mostrar notificación
+      showAchievementNotification(achievementName);
+  }
+}
+
+// Función para mostrar notificación de logro
+function showAchievementNotification(achievementName) {
+  const notification = document.createElement('div');
+  notification.className = 'achievement-notification';
+  notification.innerHTML = `
+      <div class="alert alert-info">
+          <strong>¡Logro Desbloqueado!</strong><br>
+          ${achievementName}: ${achievements[achievementName].description}<br>
+          +${achievements[achievementName].points} puntos bonus
+      </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Remover después de 5 segundos
+  setTimeout(() => {
+      if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+      }
+  }, 5000);
+}
+
+// Función para actualizar la interfaz de usuario
+function updateUI() {
+  // Actualizar puntuación
+  const scoreElement = document.getElementById('currentScore');
+  if (scoreElement) {
+      scoreElement.textContent = userScore;
+  }
+  
+  // Actualizar racha
+  const streakElement = document.getElementById('currentStreak');
+  if (streakElement) {
+      streakElement.textContent = currentStreak;
+  }
+  
+  // Actualizar estadísticas
+  updateStatsDisplay();
+  
+  // Actualizar logros
+  updateAchievementsDisplay();
+}
+
+// Función para actualizar estadísticas
+function updateStatsDisplay() {
+  const statsContainer = document.getElementById('statsContainer');
+  if (!statsContainer) return;
+  
+  const accuracy = userStats.totalExercises > 0 ? 
+      ((userStats.correctAnswers / userStats.totalExercises) * 100).toFixed(1) : 0;
+  
+  statsContainer.innerHTML = `
+      <div class="stats-grid">
+          <div class="stat-item">
+              <h4>Ejercicios Totales</h4>
+              <span class="stat-value">${userStats.totalExercises}</span>
+          </div>
+          <div class="stat-item">
+              <h4>Respuestas Correctas</h4>
+              <span class="stat-value">${userStats.correctAnswers}</span>
+          </div>
+          <div class="stat-item">
+              <h4>Precisión</h4>
+              <span class="stat-value">${accuracy}%</span>
+          </div>
+          <div class="stat-item">
+              <h4>Mejor Racha</h4>
+              <span class="stat-value">${Math.max(currentStreak, 0)}</span>
+          </div>
+      </div>
+      
+      <h4>Estadísticas por Categoría:</h4>
+      <div class="category-stats">
+          ${Object.keys(userStats.categoryStats).map(category => {
+              const stats = userStats.categoryStats[category];
+              const categoryAccuracy = ((stats.correct / stats.total) * 100).toFixed(1);
+              return `
+                  <div class="category-stat">
+                      <strong>${formatCategoryName(category)}:</strong>
+                      ${stats.correct}/${stats.total} (${categoryAccuracy}%)
+                  </div>
+              `;
+          }).join('')}
+      </div>
+  `;
+}
+
+// Función para actualizar logros
+function updateAchievementsDisplay() {
+  const achievementsContainer = document.getElementById('achievementsContainer');
+  if (!achievementsContainer) return;
+  
+  achievementsContainer.innerHTML = `
+      <div class="achievements-grid">
+          ${Object.keys(achievements).map(achievementName => {
+              const achievement = achievements[achievementName];
+              const unlockedClass = achievement.unlocked ? 'unlocked' : 'locked';
+              return `
+                  <div class="achievement-item ${unlockedClass}">
+                      <h5>${achievementName}</h5>
+                      <p>${achievement.description}</p>
+                      <span class="achievement-points">+${achievement.points} pts</span>
+                      ${achievement.unlocked ? '<span class="achievement-status">✓ Desbloqueado</span>' : '<span class="achievement-status">🔒 Bloqueado</span>'}
+                  </div>
+              `;
+          }).join('')}
+      </div>
+  `;
+}
+
+// Función para mostrar/ocultar secciones
+function showSection(sectionId) {
+  const sections = ['exercise-section', 'stats-section', 'achievements-section', 'history-section'];
+  
+  sections.forEach(section => {
+      const element = document.getElementById(section);
+      if (element) {
+          element.style.display = section === sectionId ? 'block' : 'none';
+      }
+  });
+  
+  // Actualizar botones de navegación
+  const navButtons = document.querySelectorAll('.nav-btn');
+  navButtons.forEach(btn => {
+      btn.classList.remove('active');
+  });
+  
+  const activeBtn = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
+  if (activeBtn) {
+      activeBtn.classList.add('active');
+  }
+  
+  // Actualizar contenido específico de la sección
+  if (sectionId === 'history-section') {
+      updateHistoryDisplay();
+  }
+}
+
+// Función para actualizar historial
+function updateHistoryDisplay() {
+  const historyContainer = document.getElementById('historyContainer');
+  if (!historyContainer) return;
+  
+  if (exerciseHistory.length === 0) {
+      historyContainer.innerHTML = '<p>No hay ejercicios resueltos aún.</p>';
+      return;
+  }
+  
+  historyContainer.innerHTML = `
+      <div class="history-list">
+          ${exerciseHistory.slice(-10).reverse().map((exercise, index) => `
+              <div class="history-item ${exercise.isCorrect ? 'correct' : 'incorrect'}">
+                  <div class="history-header">
+                      <span class="history-category">${formatCategoryName(exercise.category)}</span>
+                      <span class="history-points">${exercise.points} pts</span>
+                      <span class="history-status">${exercise.isCorrect ? '✓' : '✗'}</span>
+                  </div>
+                  <div class="history-question">
+                      <strong>Pregunta:</strong> ${exercise.question}
+                  </div>
+                  <div class="history-answer">
+                      <strong>Tu respuesta:</strong> ${exercise.userAnswer}
+                  </div>
+                  ${!exercise.isCorrect ? `
+                      <div class="history-correct">
+                          <strong>Respuesta correcta:</strong> ${exercise.correctAnswer}
+                      </div>
+                  ` : ''}
+                  <div class="history-time">
+                      ${exercise.timestamp.toLocaleString()}
+                  </div>
+              </div>
+          `).join('')}
+      </div>
+  `;
+  
+  // Renderizar matemáticas con MathJax
+  if (window.MathJax) {
+      MathJax.typesetPromise([historyContainer]);
+  }
+}
+
+// Función para exportar progreso
+function exportProgress() {
+  const progressData = {
+      userScore: userScore,
+      userStats: userStats,
+      achievements: achievements,
+      exerciseHistory: exerciseHistory,
+      currentStreak: currentStreak,
+      categoriesUsed: Array.from(categoriesUsed),
+      exportDate: new Date().toISOString()
+  };
+  
+  const dataStr = JSON.stringify(progressData, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(dataBlob);
+  link.download = `matematicas_progreso_${new Date().toISOString().split('T')[0]}.json`;
+  link.click();
+}
+
+// Función para importar progreso
+function importProgress(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+      try {
+          const progressData = JSON.parse(e.target.result);
+          
+          // Validar y cargar datos
+          if (progressData.userScore !== undefined) userScore = progressData.userScore;
+          if (progressData.userStats) userStats = progressData.userStats;
+          if (progressData.achievements) {
+              Object.keys(progressData.achievements).forEach(key => {
+                  if (achievements[key]) {
+                      achievements[key].unlocked = progressData.achievements[key].unlocked;
+                  }
+              });
+          }
+          if (progressData.exerciseHistory) exerciseHistory = progressData.exerciseHistory;
+          if (progressData.currentStreak !== undefined) currentStreak = progressData.currentStreak;
+          if (progressData.categoriesUsed) categoriesUsed = new Set(progressData.categoriesUsed);
+          
+          updateUI();
+          alert('Progreso importado exitosamente');
+          
+      } catch (error) {
+          alert('Error al importar el archivo: ' + error.message);
+      }
+  };
+  
+  reader.readAsText(file);
+}
+
+// Función para resetear progreso
+function resetProgress() {
+  if (confirm('¿Estás seguro de que quieres resetear todo tu progreso? Esta acción no se puede deshacer.')) {
+      userScore = 0;
+      exerciseHistory = [];
+      currentStreak = 0;
+      categoriesUsed = new Set();
+      userStats = {
+          totalExercises: 0,
+          correctAnswers: 0,
+          categoryStats: {}
+      };
+      
+      Object.keys(achievements).forEach(key => {
+          achievements[key].unlocked = false;
+      });
+      
+      currentExercise = null;
+      
+      updateUI();
+      showSection('exercise-section');
+      alert('Progreso reseteado exitosamente');
+  }
+}
+
+// Inicializar la aplicación cuando se carga la página
+document.addEventListener('DOMContentLoaded', initializeApp);
+
+// Configuración adicional para MathJax
+window.MathJax = {
+  tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']]
+  },
+  svg: {
+      fontCache: 'global'
+  }
+};
+
+// Estilos CSS adicionales
+const additionalStyles = `
+  .achievement-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      max-width: 300px;
+      animation: slideIn 0.3s ease-out;
+  }
+  
+  @keyframes slideIn {
+      from {
+          transform: translateX(100%);
+          opacity: 0;
+      }
+      to {
+          transform: translateX(0);
+          opacity: 1;
+      }
+  }
+  
+  .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+  }
+  
+  .stat-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #dee2e6;
+  }
+  
+  .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #0066cc;
+  }
+  
+  .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+  }
+  
+  .achievement-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      transition: transform 0.2s;
+  }
+  
+  .achievement-item.unlocked {
+      background: #d4edda;
+      border-color: #c3e6cb;
+  }
+  
+  .achievement-item.locked {
+      opacity: 0.6;
+  }
+  
+  .achievement-item:hover {
+      transform: translateY(-2px);
+  }
+  
+  .achievement-points {
+      color: #0066cc;
+      font-weight: bold;
+  }
+  
+  .achievement-status {
+      display: block;
+      margin-top: 10px;
+      font-size: 14px;
+  }
+  
+  .history-list {
+      max-height: 600px;
+      overflow-y: auto;
+  }
+  
+  .history-item {
+      background: #f8f9fa;
+      margin-bottom: 15px;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid #dee2e6;
+  }
+  
+  .history-item.correct {
+      border-left-color: #28a745;
+  }
+  
+  .history-item.incorrect {
+      border-left-color: #dc3545;
+  }
+  
+  .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+  }
+  
+  .history-category {
+      background: #0066cc;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+  }
+  
+  .history-time {
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 10px;
+  }
+  
+  .category-stats {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+  }
+  
+  .category-stat {
+      margin-bottom: 8px;
+  }
+  
+  @media (max-width: 768px) {
+      .stats-grid {
+          grid-template-columns: 1fr;
+      }
+      
+      .achievements-grid {
+          grid-template-columns: 1fr;
+      }
+      
+      .history-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 5px;
+      }
+  }
+`;
+
+// Agregar estilos al documento
+const styleSheet = document.createElement('style');
+styleSheet.textContent = additionalStyles;
+document.head.appendChild(styleSheet);
