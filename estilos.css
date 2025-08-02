@@ -1,271 +1,49 @@
-/* Estilos generales */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    color: #333;
-    background-color: #f5f5f5;
-    margin: 0;
-    padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
 }
 
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+  max-width: 800px;
+  margin: auto;
+  padding: 2em;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin-top: 4em;
+  border-radius: 10px;
 }
 
-header {
-    text-align: center;
-    margin-bottom: 30px;
-    padding: 20px;
-    background-color: #2c3e50;
-    color: white;
-    border-radius: 5px;
-}
-
-header h1 {
-    margin: 0;
-    font-size: 2.2em;
-}
-
-header p {
-    margin: 10px 0 0;
-    font-size: 1.1em;
-}
-
-/* Controles */
-.controls {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
-}
-
-.category-selection, .exam-options {
-    margin-bottom: 20px;
-}
-
-.category-selection h2, .exam-options h2 {
-    margin-top: 0;
-    color: #2c3e50;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-}
-
-.categories {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 10px;
-}
-
-.categories label {
-    display: flex;
-    align-items: center;
-    padding: 5px;
-    cursor: pointer;
-}
-
-.categories input {
-    margin-right: 8px;
-}
-
-.exam-options div {
-    margin-bottom: 15px;
-}
-
-.exam-options label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.exam-options input[type="text"],
-.exam-options input[type="date"] {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
+h1 {
+  text-align: center;
+  color: #2c3e50;
 }
 
 button {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1em;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-    transition: background-color 0.3s;
+  display: block;
+  margin: 1em auto;
+  padding: 0.7em 1.5em;
+  background-color: #3498db;
+  border: none;
+  color: white;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
 button:hover {
-    background-color: #2980b9;
+  background-color: #2980b9;
 }
 
-button:disabled {
-    background-color: #95a5a6;
-    cursor: not-allowed;
+.question-block {
+  margin-bottom: 1.5em;
+  padding: 1em;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fafafa;
 }
 
-/* Vista previa del examen */
-.exam-preview {
-    background-color: white;
-    padding: 30px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.exam-header {
-    text-align: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #eee;
-}
-
-.exam-header h2 {
-    margin: 0 0 10px;
-    color: #2c3e50;
-}
-
-.exam-info {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.exam-info span {
-    white-space: nowrap;
-}
-
-.questions-container {
-    counter-reset: question-counter;
-}
-
-.question {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px dashed #ddd;
-    page-break-inside: avoid;
-}
-
-.question:last-child {
-    border-bottom: none;
-}
-
-.question::before {
-    counter-increment: question-counter;
-    content: counter(question-counter) ". ";
-    font-weight: bold;
-    margin-right: 5px;
-}
-
-.question-text {
-    margin-bottom: 15px;
-    font-size: 1.1em;
-}
-
-.points {
-    float: right;
-    font-weight: bold;
-}
-
-.instructions {
-    font-style: italic;
-    color: #7f8c8d;
-    text-align: center;
-    padding: 20px;
-}
-
-/* Responsivo */
-@media (max-width: 768px) {
-    .categories {
-        grid-template-columns: 1fr 1fr;
-    }
-    
-    .exam-info {
-        flex-direction: column;
-        gap: 5px;
-    }
-}
-
-@media print {
-    .controls {
-        display: none;
-    }
-    
-    .exam-preview {
-        box-shadow: none;
-        padding: 0;
-    }
-    
-    body {
-        background-color: white;
-    }
-}
-
-/* Agrega estos estilos al final del archivo */
-.answers-container {
-    margin-top: 40px;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-    border-left: 4px solid #3498db;
-}
-
-.answer {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #eee;
-}
-
-.answer::before {
-    counter-increment: answer-counter;
-    content: counter(answer-counter) ". ";
-    font-weight: bold;
-    margin-right: 5px;
-}
-
-.answer-text {
-    margin-bottom: 10px;
-}
-
-.hint-btn {
-    background-color: #f39c12;
-    margin-left: 10px;
-}
-
-.hint-btn:hover {
-    background-color: #e67e22;
-}
-
-.hint {
-    display: none;
-    padding: 10px;
-    margin-top: 10px;
-    background-color: #fffde7;
-    border-left: 3px solid #f39c12;
-    font-style: italic;
-}
-
-.show-hint {
-    display: block;
-}
-
-#show-answers-btn, #hide-answers-btn {
-    margin-top: 20px;
-    display: inline-block;
-}
-
-.solution-steps {
-    margin-top: 15px;
-    padding-left: 20px;
-    border-left: 2px solid #3498db;
-}
-
-.step {
-    margin-bottom: 10px;
+.oculto {
+  display: none;
 }
