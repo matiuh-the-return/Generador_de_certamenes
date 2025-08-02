@@ -1,79 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Certámenes Matemáticos</title>
-    <link rel="stylesheet" href="estilos.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Generador de Certámenes</title>
+  <link rel="stylesheet" href="estilos.css" />
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Generador de Certámenes Matemáticos</h1>
-            <p>Selecciona los temas y genera un certamen de 100 puntos con 5 preguntas</p>
-        </header>
+  <div class="container">
+    <h1>Generador de Certámenes</h1>
+    <button id="generarBtn">Generar Certamen</button>
+    <form id="certamenForm" class="oculto"></form>
+    <button id="enviarBtn" class="oculto">Enviar Respuestas</button>
+    <div id="resultado" class="oculto"></div>
+  </div>
 
-        <div class="controls">
-            <div class="category-selection">
-                <h2>Selecciona Categorías</h2>
-                <div class="categories">
-                    <label><input type="checkbox" class="category" value="puntos_criticos" checked> Puntos Críticos</label>
-                    <label><input type="checkbox" class="category" value="asintotas" checked> Asíntotas</label>
-                    <label><input type="checkbox" class="category" value="rectas" checked> Rectas</label>
-                    <label><input type="checkbox" class="category" value="limites" checked> Límites</label>
-                    <label><input type="checkbox" class="category" value="funciones_complejas" checked> Funciones Complejas</label>
-                    <label><input type="checkbox" class="category" value="graficas" checked> Gráficas</label>
-                    <label><input type="checkbox" class="category" value="derivadas_implicitas" checked> Derivadas Implícitas</label>
-                    <label><input type="checkbox" class="category" value="regla_cadena" checked> Regla de la Cadena</label>
-                    <label><input type="checkbox" class="category" value="inecuaciones" checked> Inecuaciones</label>
-                    <label><input type="checkbox" class="category" value="razon_cambio" checked> Razón de Cambio</label>
-                    <label><input type="checkbox" class="category" value="optimizacion" checked> Optimización</label>
-                </div>
-            </div>
-
-            <div class="exam-options">
-                <h2>Opciones del Certamen</h2>
-                <div>
-                    <label for="exam-title">Título del Certamen:</label>
-                    <input type="text" id="exam-title" value="Certamen de Matemáticas">
-                </div>
-                <div>
-                    <label for="student-name">Nombre del Estudiante:</label>
-                    <input type="text" id="student-name" placeholder="Nombre del estudiante">
-                </div>
-                <div>
-                    <label for="exam-date">Fecha:</label>
-                    <input type="date" id="exam-date">
-                </div>
-            </div>
-
-            <button id="generate-btn">Generar Certamen</button>
-            <button id="print-btn" disabled>Imprimir Certamen</button>
-        </div>
-
-        <div class="exam-preview" id="exam-preview">
-            <div class="exam-header">
-                <h2 id="preview-title">Certamen de Matemáticas</h2>
-                <div class="exam-info">
-                    <span id="preview-student">Nombre: _______________________</span>
-                    <span id="preview-date">Fecha: _______________________</span>
-                    <span>Puntaje total: 100 puntos</span>
-                    
-                </div>
-            </div>
-            <div class="questions-container" id="questions-container">
-                <p class="instructions">Selecciona categorías y haz clic en "Generar Certamen" para ver las preguntas.</p>
-                <!-- Agrega esto dentro del div .exam-preview, después del questions-container -->
-<div class="answers-container" id="answers-container" style="display: none;">
-    <h3>Respuestas y Soluciones</h3>
-    <div id="answers-content"></div>
-</div>
-<button id="show-answers-btn" style="display: none;">Mostrar Respuestas</button>
-<button id="hide-answers-btn" style="display: none;">Ocultar Respuestas</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="logica.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
