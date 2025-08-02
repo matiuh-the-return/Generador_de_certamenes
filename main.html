@@ -23,6 +23,14 @@
         </div>
 
         <div class="main-content">
+            <!-- Navegación -->
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="showSection('setupSection')">Configurar</button>
+                <button class="nav-btn" onclick="showSection('examSection')">Examen</button>
+                <button class="nav-btn" onclick="showSection('resultsSection')">Resultados</button>
+                <button class="nav-btn" onclick="showSection('statsSection')">Estadísticas</button>
+            </div>
+
             <!-- Sección de Configuración -->
             <div class="setup-section" id="setupSection">
                 <h2>Configurar Examen</h2>
@@ -37,6 +45,11 @@
                     </div>
                     
                     <div class="control-group">
+                        <label for="categorySelector">Categoría:</label>
+                        <select id="categorySelector"></select>
+                    </div>
+                    
+                    <div class="control-group">
                         <label for="timeLimit">Tiempo Límite (minutos):</label>
                         <input type="number" id="timeLimit" value="90" min="30" max="180">
                     </div>
@@ -48,7 +61,7 @@
             </div>
 
             <!-- Sección del Examen -->
-            <div class="exam-section" id="examSection">
+            <div class="exam-section" id="examSection" style="display:none;">
                 <div class="exam-header">
                     <div class="exam-info">
                         <h2>Examen en Progreso</h2>
@@ -57,7 +70,9 @@
                     <div class="timer" id="timer">90:00</div>
                 </div>
 
-                <div id="exercisesContainer"></div>
+                <div id="exercisesContainer">
+                    <!-- Los ejercicios se generarán aquí -->
+                </div>
 
                 <button class="submit-btn" onclick="submitExam()">
                     ✅ Entregar Examen
@@ -65,11 +80,12 @@
             </div>
 
             <!-- Sección de Resultados -->
-            <div class="results-section" id="resultsSection">
+            <div class="results-section" id="resultsSection" style="display:none;">
                 <h2 class="results-title">Examen Completado</h2>
                 <div class="completion-info">
                     <p>¡Examen entregado exitosamente!</p>
                     <p>Tiempo utilizado: <span id="timeUsed"></span></p>
+                    <p>Puntuación obtenida: <span id="scoreObtained"></span></p>
                 </div>
                 
                 <div class="answers-section">
@@ -80,6 +96,14 @@
                 <button class="new-exam-btn" onclick="resetExam()">
                     🔄 Nuevo Examen
                 </button>
+            </div>
+
+            <!-- Sección de Estadísticas -->
+            <div class="stats-section" id="statsSection" style="display:none;">
+                <h2>Estadísticas</h2>
+                <div class="stats-container" id="statsContainer">
+                    <!-- Las estadísticas se generarán aquí -->
+                </div>
             </div>
         </div>
     </div>
