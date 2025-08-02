@@ -58,10 +58,18 @@
                     <span id="preview-student">Nombre: _______________________</span>
                     <span id="preview-date">Fecha: _______________________</span>
                     <span>Puntaje total: 100 puntos</span>
+                    
                 </div>
             </div>
             <div class="questions-container" id="questions-container">
                 <p class="instructions">Selecciona categorías y haz clic en "Generar Certamen" para ver las preguntas.</p>
+                <!-- Agrega esto dentro del div .exam-preview, después del questions-container -->
+<div class="answers-container" id="answers-container" style="display: none;">
+    <h3>Respuestas y Soluciones</h3>
+    <div id="answers-content"></div>
+</div>
+<button id="show-answers-btn" style="display: none;">Mostrar Respuestas</button>
+<button id="hide-answers-btn" style="display: none;">Ocultar Respuestas</button>
             </div>
         </div>
     </div>
