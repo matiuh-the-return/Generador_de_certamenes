@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen Recuperativo - Cálculo Diferencial</title>
+    <link rel="stylesheet" href="estilos.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Examen Recuperativo</h1>
+            <p>Cálculo Diferencial - Sistema de Evaluación Interactivo</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Sección de Configuración -->
+            <div class="setup-section" id="setupSection">
+                <h2>Configurar Examen</h2>
+                
+                <div class="setup-controls">
+                    <div class="control-group">
+                        <label for="numExercises">Número de Ejercicios:</label>
+                        <select id="numExercises">
+                            <option value="4">4 ejercicios</option>
+                            <option value="5" selected>5 ejercicios</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="timeLimit">Tiempo Límite (minutos):</label>
+                        <input type="number" id="timeLimit" value="90" min="30" max="180">
+                    </div>
+                </div>
+
+                <button class="generate-btn" onclick="generateExam()">
+                    🚀 Generar Examen
+                </button>
+            </div>
+
+            <!-- Sección del Examen -->
+            <div class="exam-section" id="examSection">
+                <div class="exam-header">
+                    <div class="exam-info">
+                        <h2>Examen en Progreso</h2>
+                        <p>Completa todos los ejercicios antes de que termine el tiempo</p>
+                    </div>
+                    <div class="timer" id="timer">90:00</div>
+                </div>
+
+                <div id="exercisesContainer"></div>
+
+                <button class="submit-btn" onclick="submitExam()">
+                    ✅ Entregar Examen
+                </button>
+            </div>
+
+            <!-- Sección de Resultados -->
+            <div class="results-section" id="resultsSection">
+                <h2 class="results-title">Examen Completado</h2>
+                <div class="completion-info">
+                    <p>¡Examen entregado exitosamente!</p>
+                    <p>Tiempo utilizado: <span id="timeUsed"></span></p>
+                </div>
+                
+                <div class="answers-section">
+                    <h3>Respuestas Correctas</h3>
+                    <div id="correctAnswers"></div>
+                </div>
+
+                <button class="new-exam-btn" onclick="resetExam()">
+                    🔄 Nuevo Examen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="logica.js"></script>
+</body>
+</html>
