@@ -492,6 +492,8 @@ const exerciseBank = {
            hint: "Usa el teorema de Pitágoras y deriva implícitamente respecto al tiempo.",
            points: 25
        },
+      {
+      question : "Un globo esferico se infla. Si su radio aumenta 3 cm/s  , Cuan ráído aumenta su volumen?",
       answer: "Para encontrar la razón de cambio del volumen:\n1. V = (4/3)πr³\n2. Derivando: dV/dt = (4/3)π · 3r² · dr/dt = 4πr² · dr/dt\n3. Dado: dr/dt = 3 cm/s\n4. dV/dt = 4πr² · 3 = 12πr² cm³/s\n5. La razón de cambio del volumen depende del radio actual\n6. Por ejemplo, cuando r = 5 cm: dV/dt = 12π(25) = 300π ≈ 942.5 cm³/s\n7. Cuando r = 10 cm: dV/dt = 12π(100) = 1200π ≈ 3770 cm³/s",
            hint: "El volumen de una esfera es V = (4/3)πr³. Deriva respecto al tiempo.",
            points: 25
