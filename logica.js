@@ -123,107 +123,72 @@ const questionsDatabase = {
     ]
 };
 
-// Función para inicializar la aplicación
-document.addEventListener('DOMContentLoaded', function() {
-    // Establecer la fecha actual por defecto
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('exam-date').value = today;
-    
-    // Event listeners
-    document.getElementById('generate-btn').addEventListener('click', generateExam);
-    document.getElementById('print-btn').addEventListener('click', printExam);
+// Base de datos de preguntas (pegada directamente aquí)
+
+
+// Obtén las categorías de la base de datos
+const categorias = Object.keys(questionsDatabase);
+
+function getRandomElementsFromArray(arr, count) {
+  const shuffled = [...arr].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
+function generateExam() {
+  const preguntas = [];
+  while (preguntas.length < 4 || preguntas.length < 5 && Math.random() < 0.5) {
+    const categoriaAleatoria = categorias[Math.floor(Math.random() * categorias.length)];
+    const preguntasCategoria = questionsDatabase[categoriaAleatoria];
+    const preguntaAleatoria = preguntasCategoria[Math.floor(Math.random() * preguntasCategoria.length)];
+    if (!preguntas.includes(preguntaAleatoria)) {
+      preguntas.push({ categoria: categoriaAleatoria, texto: preguntaAleatoria });
+    }
+  }
+  return preguntas;
+}
+
+document.getElementById('generarBtn').addEventListener('click', () => {
+  const preguntas = generateExam();
+  const form = document.getElementById('certamenForm');
+  form.innerHTML = ''; // limpiar
+
+  preguntas.forEach((pregunta, index) => {
+    const div = document.createElement('div');
+    div.classList.add('question-block');
+    div.innerHTML = `
+      <p><strong>Pregunta ${index + 1} (${pregunta.categoria}):</strong><br>${pregunta.texto}</p>
+      <textarea rows="4" cols="80" name="respuesta${index}"></textarea>
+    `;
+    form.appendChild(div);
+  });
+
+  form.classList.remove('oculto');
+  document.getElementById('enviarBtn').classList.remove('oculto');
+  document.getElementById('resultado').classList.add('oculto');
+  form.dataset.preguntas = JSON.stringify(preguntas);
 });
 
-// Función para generar un examen aleatorio
-function generateExam() {
-    const selectedCategories = Array.from(document.querySelectorAll('.category:checked')).map(el => el.value);
-    
-    if (selectedCategories.length === 0) {
-        alert('Por favor selecciona al menos una categoría.');
-        return;
-    }
-    
-    // Obtener todas las preguntas de las categorías seleccionadas
-    let allQuestions = [];
-    selectedCategories.forEach(category => {
-        allQuestions = allQuestions.concat(questionsDatabase[category].map(q => ({
-            text: q,
-            category: category
-        })));
-    });
-    
-    // Mezclar las preguntas aleatoriamente
-    const shuffledQuestions = shuffleArray(allQuestions);
-    
-    // Seleccionar 5 preguntas (o menos si no hay suficientes)
-    const selectedQuestions = shuffledQuestions.slice(0, Math.min(5, shuffledQuestions.length));
-    
-    // Asignar puntajes (total 100 puntos)
-    const pointsPerQuestion = Math.floor(100 / selectedQuestions.length);
-    let remainingPoints = 100 - (pointsPerQuestion * selectedQuestions.length);
-    
-    // Mostrar el examen en la vista previa
-    displayExam(selectedQuestions, pointsPerQuestion, remainingPoints);
-    
-    // Habilitar el botón de imprimir
-    document.getElementById('print-btn').disabled = false;
-}
+document.getElementById('enviarBtn').addEventListener('click', () => {
+  const form = document.getElementById('certamenForm');
+  const preguntas = JSON.parse(form.dataset.preguntas);
+  const respuestas = Array.from(form.elements)
+    .filter(el => el.tagName === 'TEXTAREA')
+    .map(el => el.value.trim());
 
-// Función para mezclar un array (algoritmo Fisher-Yates)
-function shuffleArray(array) {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-    return newArray;
-}
+  const resultadoDiv = document.getElementById('resultado');
+  resultadoDiv.innerHTML = '<h2>Preguntas y Respuestas:</h2>';
 
-// Función para mostrar el examen en la vista previa
-function displayExam(questions, basePoints, extraPoints) {
-    const examTitle = document.getElementById('exam-title').value || 'Certamen de Matemáticas';
-    const studentName = document.getElementById('student-name').value || '_______________________';
-    const examDate = document.getElementById('exam-date').value || '_______________________';
-    
-    // Actualizar encabezado
-    document.getElementById('preview-title').textContent = examTitle;
-    document.getElementById('preview-student').textContent = `Nombre: ${studentName}`;
-    document.getElementById('preview-date').textContent = `Fecha: ${examDate}`;
-    
-    // Generar preguntas
-    const questionsContainer = document.getElementById('questions-container');
-    questionsContainer.innerHTML = '';
-    
-    questions.forEach((question, index) => {
-        // Asignar puntos (distribuir los puntos extra)
-        const points = basePoints + (index < extraPoints ? 1 : 0);
-        
-        const questionElement = document.createElement('div');
-        questionElement.className = 'question';
-        
-        const questionText = document.createElement('div');
-        questionText.className = 'question-text';
-        questionText.innerHTML = question.text;
-        
-        const pointsElement = document.createElement('span');
-        pointsElement.className = 'points';
-        pointsElement.textContent = `(${points} puntos)`;
-        
-        questionText.appendChild(pointsElement);
-        questionElement.appendChild(questionText);
-        
-        // Agregar espacio para respuesta si es necesario
-        if (question.category !== 'inecuaciones' && question.category !== 'optimizacion') {
-            const answerSpace = document.createElement('div');
-            answerSpace.innerHTML = '<br><br><u>Solución:</u><br><br><br><br>';
-            questionElement.appendChild(answerSpace);
-        }
-        
-        questionsContainer.appendChild(questionElement);
-    });
-}
+  preguntas.forEach((preg, i) => {
+    const p = document.createElement('div');
+    p.innerHTML = `
+      <div class="question-block">
+        <p><strong>${i + 1}. ${preg.texto}</strong></p>
+        <p><em>Tu respuesta:</em> ${respuestas[i] || '(Sin respuesta)'}</p>
+      </div>
+    `;
+    resultadoDiv.appendChild(p);
+  });
 
-// Función para imprimir el examen
-function printExam() {
-    window.print();
-}
+  resultadoDiv.classList.remove('oculto');
+});
+
